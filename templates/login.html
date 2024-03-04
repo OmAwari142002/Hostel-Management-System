@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <!-- <link data-n-head="1" rel="icon" type="image/x-icon" href="https://delhivery.com/favicon.png"> -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <title>Login</title>
+    <style>
+        body {
+            font-family: "Open Sans", Arial, sans-serif;
+            line-height: 1.5;
+            font-size: 16px;
+            color: #848484;
+            background-color: #f0f0f0;
+            padding: 0;
+            margin: 0;
+        }
+
+
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: -4px 7px 46px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .container h2 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 24px;
+            margin: 0 0 30px 0;
+            color: #000000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 300;
+            font-size: 14px;
+        }
+       
+        .form-group input {
+            width: calc(100% - 30px);
+            padding: 15px;
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            -o-box-shadow: none;
+            box-shadow: none;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            -ms-border-radius: 0;
+            border-radius: 0;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease;
+            -ms-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group input:active {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-success {
+            width: 100%;
+            padding: 15px;
+            background: #ED3237;
+            color: #ffffff;
+            border: none;
+            border-radius: 0;
+            -webkit-box-shadow: -2px 10px 20px -1px rgba(237, 60, 173, 0.4);
+            -moz-box-shadow: -2px 10px 20px -1px rgba(237, 60, 173, 0.4);
+            -o-box-shadow: -2px 10px 20px -1px rgba(237, 60, 173, 0.4);
+            box-shadow: -2px 10px 20px -1px rgba(237, 60, 173, 0.4);
+            cursor: pointer;
+        }
+
+        .btn-success:hover, .btn-success:focus, .btn-success:active {
+            background: #FF4D4D !important;
+            outline: none;
+        }
+
+        .signup-btn {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .signup-btn a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .custom-select {
+            width: calc(100% - 10px);
+            padding: 15px;
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            -o-box-shadow: none;
+            box-shadow: none;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            -ms-border-radius: 0;
+            border-radius: 0;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease;
+            -ms-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+          }
+    
+          .custom-select:focus,
+          .custom-select:active {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+          }
+          .custom-select:hover {
+            cursor: pointer;
+          }
+          .custom-select option {
+            background-color: #f8f8f8;
+            color: #333;
+            font-size: 16px;
+            padding: 12px 15px;
+            transition: background-color 0.3s ease;
+          }
+        
+     
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Sign In</h2>
+        
+        
+        <form method="POST" action="verify_login">
+            {% csrf_token %}
+            <div class="form-group" >
+                <label for="identity">Select User Type</label>
+                <select id="identity" name="identity" class="identity custom-select" required>
+                  <option value="admin">Admin</option>
+                  <option value="rector">Rector</option>
+                  <option value="student">Student</option>
+              </select>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Your Username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter Password" required>
+                <!-- <span class="toggle-password" onclick="togglePasswordVisibility('password')"><i class="fa fa-eye"></i></span> -->
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Sign In</button>
+            </div>
+        </form>
+        <div class="signup-btn">Don't have an account? <a href="signup">Sign Up</a></div>
+        <div class="signup-btn">Forgotten your password ?  <a href="Forgotpwd">Reset Here</a></div>
+        <div class="signup-btn"><a href="/">Go Back to Home</a></div>
+    </div>
+    <script>
+        window.onload = function() {
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+        };
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = passwordInput.nextElementSibling;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.innerHTML = '<i class="fa fa-eye-slash"></i>';
+            } else {
+                passwordInput.type = 'password';
+                icon.innerHTML = '<i class="fa fa-eye"></i>';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+          const params = new URLSearchParams(window.location.search);
+          const Username = params.get('type');
+          if(Username){
+            const identitySelect = document.getElementById('identity');
+          
+            identitySelect.value = Username;
+           
+          }
+
+        });
+        
+        {% if message %}
+            
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "{{message}}",
+                position: "top",
+                timer: 5000,
+                timerProgressBar: true,
+              });
+        {% endif %}
+        {% if error %}
+            
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "{{error}}",
+                position: "top",
+                timer: 5000,
+                timerProgressBar: true,
+              });
+        {% endif %}
+       
+
+    </script>
+</body>
+</html>
