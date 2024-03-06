@@ -1,0 +1,217 @@
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Complaint Form</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container">
+<h2>Complaint Form</h2>
+<form id="complaintForm" action="/complaint_submit" method="POST">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="name" class="form-label">Full Name</label>
+    <input type="text" class="form-control" id="name" name="fullName" required readonly/>
+  </div>
+  <div class="mb-3">
+    <label for="rollno" class="form-label">Room No.</label>
+    <input type="number" class="form-control" id="rollno" name="roomNo" value="631" required readonly/>
+  </div>
+  <div class="mb-3">
+    <label for="issueType" class="form-label">Issue Type</label>
+    <select class="form-select" id="issueType" name="issueType" required>
+      <option value="">Select an issue type</option>
+      <option value="1">Electrical</option>
+      <option value="2">Plumbing</option>
+      <option value="3">Internet</option>
+      <option value="4">Accommodation</option>
+      <option value="5">Cleaning Related</option>
+      <option value="6">Fees Related</option>
+      <option value="7">Common Area Issues</option>
+      <option value="8">Miscellaneous</option>
+    </select>
+  </div>
+  <div class="mb-3" id="additionalOptions">
+    <div class="mb-3">
+      <label for="complaint" class="form-label">Complaint</label>
+      <textarea class="form-control" id="complaint" name="complaint" required></textarea>
+    </div>
+    
+  
+
+  </div>
+  <input type="hidden" id="selectedOption" name="selectedOption" />
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<button><a href="/student-dashboard">Back</a></button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+var student = {
+  first_name: `{{student.first_name}}`,
+  last_name: `{{student.last_name}}`,
+};
+document.getElementById("name").value = student.first_name + " " + student.last_name;
+
+const optionsByIssueType = {
+  1: ["No Supply", "Light not working", "Power socket issue", "Fuse blown", "Fan not Working"],
+  2: ["Leaking faucet", "Clogged drain", "Broken pipe", "No water in Washroom"],
+  3: ["Slow internet connection", "No internet connection", "Router issue"],
+  4: ["Bed Not Given / Available", "Table Not Given / Available", "Cupboard Not Given/Available"],
+  5: ["Room Not Cleaned", "Washroom Not Cleaned"],
+  6: ["Fees Not Updated", "Wrong Fees Details"],
+  7: ["Geyser Not working", "Washing Machine not working", "Common Area Not Cleaned", "Drinking Water not Available", "Water Cooler Not working"],
+  8: ["Others"],
+};
+
+const additionalOptionsContainer = document.getElementById("additionalOptions");
+
+// Function to update additional options based on selected issue type
+function updateAdditionalOptions() {
+  const issueTypeSelect = document.getElementById("issueType");
+  const selectedIssueType = issueTypeSelect.value;
+
+  additionalOptionsContainer.innerHTML = "";
+
+  if (selectedIssueType in optionsByIssueType) {
+    const options = optionsByIssueType[selectedIssueType];
+
+    // If selected issue type is Miscellaneous (value 8), display textarea
+    if (selectedIssueType === "8") {
+      const textarea = document.createElement("textarea");
+      textarea.classList.add("form-control");
+      textarea.setAttribute("id", "complaint");
+      textarea.setAttribute("name", "complaint");
+      textarea.setAttribute("placeholder", "Enter your complaint here");
+      textarea.setAttribute("required", true);
+      additionalOptionsContainer.appendChild(textarea);
+    }
+    if (selectedIssueType === "6") {
+      const imageUpload = document.createElement("input");
+      imageUpload.setAttribute("type", "file");
+      imageUpload.setAttribute("id", "image");
+      imageUpload.setAttribute("name", "image");
+      imageUpload.setAttribute("accept", "image/*"); // Accept only image files
+      imageUpload.classList.add("form-control", "mb-3");
+
+      const uploadButton = document.createElement("button");
+      uploadButton.textContent = "Upload Image";
+      uploadButton.classList.add("btn", "btn-primary");
+      uploadButton.onclick = function (e) {
+        e.preventDefault();
+        uploadImage(e);
+      };
+      const complaintTextarea = document.createElement("textarea");
+      complaintTextarea.classList.add("form-control", "mb-3");
+      complaintTextarea.setAttribute("id", "complaint");
+      complaintTextarea.setAttribute("name", "complaint");
+      complaintTextarea.setAttribute("placeholder", "Enter your complaint here");
+      complaintTextarea.setAttribute("required", true);
+      additionalOptionsContainer.appendChild(complaintTextarea);
+      additionalOptionsContainer.appendChild(imageUpload);
+      additionalOptionsContainer.appendChild(uploadButton);
+    } else {
+      // For other issue types, display select dropdown
+      const select = document.createElement("select");
+      select.classList.add("form-select");
+      select.setAttribute("required", true);
+      select.innerHTML = '<option value="">Select an option</option>';
+
+      options.forEach((option) => {
+        const optionElement = document.createElement("option");
+        optionElement.textContent = option;
+        select.appendChild(optionElement);
+      });
+
+      select.addEventListener("change", function() {
+        // Update the hidden input with the selected option
+        document.getElementById("selectedOption").value = this.value;
+      });
+
+      additionalOptionsContainer.appendChild(select);
+    }
+  }
+}
+
+// Event listener for issue type change
+document.getElementById("issueType").addEventListener("change", updateAdditionalOptions);
+
+// Initial call to populate additional options based on default selected issue type
+updateAdditionalOptions();
+const supabase = window.supabase.createClient(
+  "https://ehkimdgvejppckunlvix.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoa2ltZGd2ZWpwcGNrdW5sdml4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk0MDE2NzksImV4cCI6MjAyNDk3NzY3OX0.d9jGcOu1KEMwbEKfyTPMzzf6RCWxwbTnDsQcEmhaj9g"
+);
+async function uploadImage(event) {
+  event.preventDefault();
+  const fileInput = document.getElementById("image");
+  const file = fileInput.files[0];
+  if (!file) {
+    console.error("No file selected.");
+    return;
+  }
+  function generateUUID() { // Public Domain/MIT
+    let d = new Date().getTime(); //Timestamp
+    let d2 = (performance && performance.now && (performance.now()*1000)) || 0; //Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        let r = Math.random() * 16; //random number between 0 and 16
+        if(d > 0){ //Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else { //Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+  const uuid = generateUUID();
+  const fileData = await file.arrayBuffer();
+  const content_type = file.type || "application/octet-stream";
+  const filename = `${uuid}_${file.name}`;
+  const path = "public/" + "complaints/" + filename;
+
+  try {
+    const { data: uploadData, error: uploadError } =
+      await supabase.storage.from("HOSTEL").upload(path, fileData, {
+        contentType: content_type,
+      });
+
+    if (uploadError) {
+      console.error("Error uploading image:", uploadError.message);
+      alert("Error uploading image");
+    } else {
+      alert("Image uploaded successfully");
+      const signedURL = await supabase.storage
+        .from("HOSTEL")
+        .createSignedUrl(path, 60 * 60 * 720);
+      console.log("Image uploaded successfully. URL:", signedURL.data.signedUrl);
+      const uploadedImage = document.createElement("textarea");
+      uploadedImage.classList.add("form-control");
+      uploadedImage.setAttribute("id", "uploadedImage");
+      uploadedImage.setAttribute("name", "UploadedImage");
+      uploadedImage.setAttribute("placeholder", "Uploaded Image URL");
+      uploadedImage.setAttribute("required", true);
+      uploadedImage.style.display = "none";
+      uploadedImage.value = signedURL.data.signedUrl;
+      console.log(uploadedImage.value);
+      additionalOptionsContainer.appendChild(uploadedImage);
+      // Disable the image upload input
+      fileInput.disabled = true;
+      const successParagraph = document.createElement('p');
+      successParagraph.textContent = "Image uploaded successfully !!!";
+      successParagraph.style.color="red";
+      additionalOptionsContainer.appendChild(successParagraph);
+
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error.message);
+  }
+}
+</script>
+</body>
+</html>

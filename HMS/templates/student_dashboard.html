@@ -1,0 +1,534 @@
+{% load bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard</title>
+    <!-- FullCalendar CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <style>
+      body {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .has-attendance .fc-day-number {
+        color: green; /* Set the color to green */
+    }
+      .navbar {
+        background-color: #273c66;
+        opacity: 0.9;
+
+        width: 100%;
+      }
+      .navbar-brand {
+        opacity: 1;
+      }
+      .navbar-nav .nav-link {
+        font-size: 20px;
+        margin-right: 30px;
+        color: white !important;
+      }
+      .nav-link:hover {
+        border-bottom: 2px solid red !important;
+        transition: 0.25s ease-in-out;
+        color: red;
+      }
+      #calendar-container {
+        width: 65%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        order: 1; /* Ensure calendar comes first */
+      }
+      #calendar-header {
+        width: 100%;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      #calendar {
+        width: 100%;
+      }
+      .fc-day {
+        border: none; /* Remove border */
+        border-radius: 10px;
+      }
+      .fc-day-number {
+        display: block;
+      }
+      /* For laptop and larger screens */
+      @media screen and (min-width: 768px) {
+        #calendar-container {
+          display: flex;
+          width: 50%; /* Take 50% of the screen */
+          float: right;
+          margin-top: 10px;
+        }
+        #graphs-container {
+          width: 50%; /* Take 50% of the screen */
+          margin-top: 10px;
+        }
+        #doughnut {
+          width: 100%;
+        }
+        #calendar-header button {
+          padding: 8px;
+          font-size: 16px;
+          background: transparent;
+          margin-right: 8px;
+          cursor: pointer;
+        }
+        #calendar-header :hover {
+          background-color: rgb(156, 156, 156);
+        }
+        #doughnut-chart {
+          margin-top: 20px !important;
+          width: 550px;
+          height: 500px;
+        }
+      }
+      /* For mobile and smaller screens */
+      @media screen and (max-width: 767px) {
+        #calendar-container {
+          width: 100%;
+          order: 1;
+        }
+        #graphs-container {
+          width: 100%;
+        }
+        #calendar-header button {
+          padding: 8px;
+          font-size: 12px;
+          background: transparent;
+          margin-right: 6px;
+          margin-top: 15px;
+          cursor: pointer;
+        }
+        #calendar-header :hover {
+          background-color: rgb(156, 156, 156);
+        }
+        #doughnut-chart {
+          margin-top: 20px;
+          width: 150px;
+          height: 150px;
+        }
+      }
+      .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 1000; /* Ensure loader appears on top of other content */
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Overlay styles */
+      #loader-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+        top: 0;
+        left: 0;
+        z-index: 999; /* Ensure overlay appears below loader but above other content */
+        display: none; /* Initially hidden */
+      }
+    </style>
+  </head>
+  <body>
+    <p>{{attendance.date}}</p>
+    <div id="loader-overlay">
+      <div class="loader"></div>
+    </div>
+    <nav class="navbar navbar-expand-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img
+            src="https://kjei.edu.in/admin_upload/27082022050243_889055_logo.png"
+            alt="Avatar Logo"
+            style="width: 80px"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarTogglerDemo02"
+          aria-controls="navbarTogglerDemo02"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a
+                class="nav-link active Navbar-button"
+                aria-current="page"
+                href="#"
+                >Profile</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Notices</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="complaintsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Complaint
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="complaintsDropdown">
+                <li><a class="dropdown-item" href="/complaints">Register a Complaint</a></li>
+                <li><a class="dropdown-item" href="#">Check Status of Complaint</a></li>
+              </ul>
+            </li>
+            
+            
+          </ul>
+          <form class="d-flex" action="/logout">
+            {% csrf_token %}
+            <button class="btn btn-outline-success btn-lg" type="submit">
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div id="calendar-container">
+      <div id="calendar-header">
+        <button id="prev"><i class="fas fa-chevron-left"></i></button>
+        <button id="next"><i class="fas fa-chevron-right"></i></button>
+        <button id="today"><i class="fas fa-calendar-day"></i> Today</button>
+
+        <h2 id="title"></h2>
+      </div>
+      <div id="calendar"></div>
+      <button id="markAttendanceBtn" class="btn btn-primary">
+        Mark Today's Attendance
+      </button>
+    </div>
+
+    <!-- Doughnut Chart -->
+    <div id="graphs-container">
+      <canvas id="doughnut-chart"></canvas>
+    </div>
+    <script>
+    {% if message %}
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Complaint Registered Successfully ",
+        position: "top",
+        timer: 5000,
+        timerProgressBar: true,
+      });
+      var url = window.location.href;
+      var newUrl = url.split("?")[0];
+      history.replaceState({}, document.title, newUrl);
+    {% endif %}
+    </script>
+    <script>
+      
+      $(document).ready(function () {
+        $("#calendar").fullCalendar({
+          header: false,
+          defaultDate: new Date(),
+          editable: true,
+          eventLimit: true,
+          events: [
+          {% comment %} {% if attendance.date %} {% endcomment %}
+          {% for date in attendance_dates %}
+          {
+              title: 'Present',
+              start: '{{ date }}',
+              allDay: true,
+              color: 'green' // Adjust color as needed
+          },
+          {% endfor %}
+          {% comment %} {% endif%} {% endcomment %}
+          {% comment %} {% if attendance.date %} {% endcomment %}
+
+          {% for date in leave_dates %}
+          {
+              title: 'Leave',
+              start: '{{ date }}',
+              allDay: true,
+              color: 'yellow' // Adjust color as needed
+          },
+          {% endfor %}
+          {% comment %} {% endif%} {% endcomment %}
+          
+          {% comment %} {% if attendance.date %} {% endcomment %}
+
+          {% for date in absent_dates %}
+          {
+              title: 'Absent',
+              start: '{{ date }}',
+              allDay: true,
+              color: 'red' // Adjust color as needed
+          },
+          {% endfor %}
+          {% comment %} {% endif%} {% endcomment %}
+          
+
+
+      ],
+
+          // Update title dynamically
+        viewRender: function (view, element) {
+            $("#title").text(view.title);
+          },
+        });
+      
+
+
+        // Manually handle prev, next, today buttons
+        $("#prev").click(function () {
+          $("#calendar").fullCalendar("prev");
+        });
+
+        $("#next").click(function () {
+          $("#calendar").fullCalendar("next");
+        });
+
+        $("#today").click(function () {
+          $("#calendar").fullCalendar("today");
+        });
+
+
+        // Doughnut chart data
+        var doughnutData = {
+          labels: ["Present", "Absent", "Leave"],
+          datasets: [
+            {
+              data: [ {{ attendance_dates|length }},
+              {{ absent_dates|length }},
+              {{ leave_dates|length }},],
+              backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56"],
+            },
+          ],
+        };
+
+        // Doughnut chart options
+        var doughnutOptions = {
+          responsive: true,
+          maintainAspectRatio: false,
+        };
+
+        // Get the canvas element
+        var ctx = document.getElementById("doughnut-chart").getContext("2d");
+
+        // Create the doughnut chart
+        var myDoughnutChart = new Chart(ctx, {
+          type: "doughnut",
+          data: doughnutData,
+          options: doughnutOptions,
+        });
+      });
+      $("#markAttendanceBtn").click(function () {
+        $("#loader-overlay").show();
+        setTimeout(function () {
+          var now = new Date();
+          var currentHour = now.getHours();
+          console.log(currentHour);
+          var currentMinutes = now.getMinutes();
+          let startTimeHour = 22;
+          let startTimeMinute = 10;
+          let startTime = startTimeHour.toString().padStart(2, '0') + ":" + startTimeMinute.toString().padStart(2, '0');
+          
+          // Set end time to 23:45
+          let endTimeHour = 23;
+          let endTimeMinute = 45;
+          let endTime = endTimeHour.toString().padStart(2, '0') + ":" + endTimeMinute.toString().padStart(2, '0');
+          let currentTime = currentHour + ":" + currentMinutes;
+          console.log(startTime);
+          console.log(endTime);
+          console.log(currentTime);
+          // Check if current time is within the specified range (10 PM to 11:30 PM IST)
+          if (currentTime >= startTime && currentTime <= endTime) {
+            // Retrieve user's current position
+            navigator.geolocation.getCurrentPosition(
+              successCallback,
+              errorCallback
+            );
+          } else {
+            $("#loader-overlay").hide();
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "You can only mark attendance between 10:30 PM and 11:30 PM IST.",
+              position: "top",
+              timer: 5000,
+              timerProgressBar: true,
+            });
+          }
+        }, 5000);
+      });
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      function getError(error, status) {
+        if (error === "timeout") {
+          return "Request timed out";
+        } else if (error === "Bad Request") {
+          return " Attendance Already Marked";
+        } else {
+          return "An error occurred while processing the request";
+        }
+      }
+      // Success callback function for geolocation
+    
+      function successCallback(position) {
+        // User's current position coordinates
+        var userLatitude = position.coords.latitude;
+        var userLongitude = position.coords.longitude;
+        console.log(
+          "userLatitude: " + userLatitude + ", userLongitude: " + userLongitude
+        );
+
+        // Coordinates of the specified GPS location
+        var gpsLatitude = 18.422187091588487; // Replace with your specified GPS latitude
+        var gpsLongitude = 73.90416321747126; // Replace with your specified GPS longitude
+
+        // Calculate the distance between user's location and the specified GPS location (using Haversine formula)
+        var distance = calculateDistance(
+          userLatitude,
+          userLongitude,
+          gpsLatitude,
+          gpsLongitude
+        );
+
+        // Check if the user is within the specified distance range (e.g., 10 meters)
+        if (distance <= 10) {
+          $.ajax({
+            url: "/mark-attendance",
+            method: "POST",
+            headers: {
+              "X-CSRFToken": getCookie("csrftoken"),
+            },
+            data: {
+              attendance: "Present",
+              username: `{{student_details.email}}`,
+            },
+            success: function (response) {
+              $("#loader-overlay").hide();
+              // Handle successful response from the backend
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Attendance Marked Successfully",
+                position: "top",
+                timer: 5000,
+                timerProgressBar: true,
+              });
+            },
+
+            error: function (xhr, status, error) {
+              $("#loader-overlay").hide();
+              // Handle error response from the backend
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: getError(error),
+                position: "top",
+                timer: 5000,
+                timerProgressBar: true,
+              });
+            },
+          });
+        } else {
+          $("#loader-overlay").hide();
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "You are not within the specified area to mark attendance.",
+            position: "top",
+            timer: 5000,
+            timerProgressBar: true,
+          });
+        }
+      }
+
+      // Error callback function for geolocation
+      function errorCallback(error) {
+        alert(
+          "Error occurred while retrieving your location: " + error.message
+        );
+      }
+
+      // Function to calculate distance between two coordinates using Haversine formula
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        var R = 6371; // Radius of the Earth in kilometers
+        var dLat = deg2rad(lat2 - lat1);
+        var dLon = deg2rad(lon2 - lon1);
+        var a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(deg2rad(lat1)) *
+            Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var distance = R * c; // Distance in kilometers
+        var distanceInMeters = distance * 1000; // Convert distance to meters
+        console.log(distance, distanceInMeters);
+        return distanceInMeters;
+      }
+
+      // Function to convert degrees to radians
+      function deg2rad(deg) {
+        return deg * (Math.PI / 180);
+      }
+    </script>
+  </body>
+</html>
