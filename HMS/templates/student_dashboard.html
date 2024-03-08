@@ -215,7 +215,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="complaintsDropdown">
                 <li><a class="dropdown-item" href="/complaints">Register a Complaint</a></li>
-                <li><a class="dropdown-item" href="#">Check Status of Complaint</a></li>
+                <li><a class="dropdown-item" href="/check-complaint-status">Check Status of Complaint</a></li>
               </ul>
             </li>
             
@@ -236,13 +236,16 @@
         <button id="prev"><i class="fas fa-chevron-left"></i></button>
         <button id="next"><i class="fas fa-chevron-right"></i></button>
         <button id="today"><i class="fas fa-calendar-day"></i> Today</button>
-
+        <button id="markAttendanceBtn" class="btn btn-primary" style="background-color: green; color: white;">
+          Mark Today's Attendance
+      </button>
+      
         <h2 id="title"></h2>
       </div>
       <div id="calendar"></div>
-      <button id="markAttendanceBtn" class="btn btn-primary">
+      {% comment %} <button id="markAttendanceBtn" class="btn btn-primary">
         Mark Today's Attendance
-      </button>
+      </button> {% endcomment %}
     </div>
 
     <!-- Doughnut Chart -->

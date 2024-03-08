@@ -13,6 +13,8 @@ from django.db import transaction
 from datetime import datetime, timedelta
 from django.contrib.auth import logout as django_logout
 from django.views.decorators.cache import never_cache
+from .models import Complaint  # Assuming your model is named 'Complaint'
+
 # Create your views here.
 def index(request):
     return render(request,'index.html')
@@ -436,3 +438,28 @@ def mark_attendance(request):
         attendance_obj.save()
         return HttpResponse('Attendance Marked Successfully')
     return HttpResponse('Invalid Request')
+
+from django.shortcuts import render
+from .models import Complaint
+
+def check_complaint_status(request):
+    # Get complaints for the current user (adjust the condition based on your actual model)
+    complaints = Complaint.objects.filter(user=request.user)
+
+    # Map issue type IDs to names
+    issue_type_mapping = {
+        '1': 'Electrical',
+        '2': 'Plumbing',
+        '3': 'Internet',
+        '4': 'Accommodation',
+        '5': 'Cleaning Related',
+        '6': 'Fees Related',
+        '7': 'Common Area Issues',
+        '8': 'Miscellaneous',
+    }
+
+    # Define the get_complaint_issue_type function
+    def get_complaint_issue_type(value):
+        return issue_type_mapping.get(value, value)
+
+    return render(request, 'check_complaint_status.html', {'complaints': complaints, 'get_complaint_issue_type': get_complaint_issue_type})

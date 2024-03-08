@@ -16,4 +16,5 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('complaints', views.complaints, name='complaints'),
     path('complaint_submit',views.complaints_submit, name='complaint_submit'),
+    path('check-complaint-status', views.check_complaint_status, name='check_complaint_status'),
 ]
