@@ -17,4 +17,7 @@ urlpatterns = [
     path('complaints', views.complaints, name='complaints'),
     path('complaint_submit',views.complaints_submit, name='complaint_submit'),
     path('check-complaint-status', views.check_complaint_status, name='check_complaint_status'),
+    path('notices/', views.notices_page, name='notices'),
+    path('student_profile/', views.student_profile_page, name='student_profile_page'),
+
 ]

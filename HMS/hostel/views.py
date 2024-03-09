@@ -463,3 +463,15 @@ def check_complaint_status(request):
         return issue_type_mapping.get(value, value)
 
     return render(request, 'check_complaint_status.html', {'complaints': complaints, 'get_complaint_issue_type': get_complaint_issue_type})
+
+
+def notices_page(request):
+    # Add any necessary context data
+    return render(request, 'notices.html')
+
+
+def student_profile_page(request):
+    # Retrieve the currently logged-in user's student details
+    student = request.user.student_details
+
+    return render(request, 'student_profile.html', {'student': student})
