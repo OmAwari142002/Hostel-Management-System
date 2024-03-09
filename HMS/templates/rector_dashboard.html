@@ -9,6 +9,8 @@
  <!-- Import Chart.js library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
   <style>
  /*NAVBAR*/
 :root {
@@ -556,10 +558,45 @@ main section[role="chart"].efficiency {
   main section[role="chart"].efficiency {
       height: 12em;
   }
+  
+}
+
+table {
+  display: none;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 30px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.approveBtn {
+  background-color: #4CAF50;
+  color: white;
+}
+.rejectBtn {
+  background-color: #FF0000;
+  color: white;
+}
+
+.approved {
+  display: none;
+  color: #4CAF50;
+}
+.rejected {
+  display: none;
+  color: #FF0000;
 }
   </style>
 </head>
-<body>
+{% comment %} <body> {% endcomment %}
   
 <body>
   <nav class="navbar">
@@ -603,9 +640,9 @@ main section[role="chart"].efficiency {
   </nav>
   <main id="Name">
       <header>
-          <section role="search">
+          <section role="search" >
               <form action="#" method="get">
-                  <div class="form-inline">
+                  <div class="form-inline" id='searchField'>
                       <img class="icon search" />
                       <input type="search" placeholder="Search" />
                   </div>
@@ -614,10 +651,10 @@ main section[role="chart"].efficiency {
 
           <section role="application">
               
-              <button class="change-view" data-action="approve">
+              <button id='approve-student-button' class="change-view" data-action="approve">
                 <img class="icon plus" />Approve Student Data
             </button> 
-            <button class="change-view" data-action="reject">
+            <button  class="change-view" data-action="reject">
               <img class="icon reject" /> Reject Student Data
           </button>
               
@@ -669,9 +706,125 @@ main section[role="chart"].efficiency {
 
           </section>
       </div>
+      <div>
+      <section>
+        
+
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>College</th>
+            <th>Approval Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr >
+              <td>1</td>
+              <td >Mike Johnson</td>
+              <td >Trinity Academy of Enginerring</td>
+              <td id="approvalStatus1" >Pending</td>
+              
+              <td >
+
+                <button id="approveBtn1" class="approveBtn" data-student-id="1" onclick="approveStudent(1)"  >
+                  Approve
+                </button>
+
+                <button id='rejectBtn1' class="rejectBtn" data-student-id="1"  onclick="rejectStudent(1)">Reject</button>
+                
+                <span id="tick1" style="display: none; color:green">
+                  <i class="fas fa-check"></i> Approved
+                </span>
+                
+                <span  class="rejected" style="display: none; color:red" id="cross1"><i class="fas fa-times"></i> Rejected</span>
+              
+              </td>
+            </tr>
+
+
+            <tr >
+              <td>2</td>
+              <td >Mike Johnson</td>
+              <td >Trinity Academy of Enginerring</td>
+              <td id="approvalStatus2" >Pending</td>
+              
+              <td >
+
+                <button id="approveBtn2" class="approveBtn" data-student-id="2" onclick="approveStudent(2)"  >
+                  Approve
+                </button>
+
+                <button id='rejectBtn2' class="rejectBtn" data-student-id="2"  onclick="rejectStudent(2)">Reject</button>
+                
+                <span id="tick2" style="display: none; color:green">
+                  <i class="fas fa-check"></i> Approved
+                </span>
+                
+                <span  class="rejected" style="display: none; color:red" id="cross2"><i class="fas fa-times"></i> Rejected</span>
+              
+              </td>
+            </tr>
+
+            <tr >
+              <td>3</td>
+              <td >Mike Johnson</td>
+              <td >Trinity Academy of Enginerring</td>
+              <td id="approvalStatus3" >Pending</td>
+              
+              <td >
+
+                <button id="approveBtn3" class="approveBtn" data-student-id="3" onclick="approveStudent(3)"  >
+                  Approve
+                </button>
+
+                <button id='rejectBtn3' class="rejectBtn" data-student-id="3"  onclick="rejectStudent(3)">Reject</button>
+                
+                <span id="tick3" style="display: none; color:green">
+                  <i class="fas fa-check"></i> Approved
+                </span>
+                
+                <span  class="rejected" style="display: none; color:red" id="cross3"><i class="fas fa-times"></i> Rejected</span>
+              
+              </td>
+            </tr>
+
+        </tbody>
+      </table>
+      </section>
+      </div>
+     
   </main>
+  
+  
 </body>
+
 <script>
+  function approveStudent(studentId) {
+    // Assuming you have a function to handle the approval logic
+    // For demonstration purposes, we'll just update the status to "Approved"
+    document.getElementById(`approvalStatus${studentId}`).textContent = 'Approved';
+    
+    // Hide the button and display the tick mark
+    document.getElementById(`approveBtn${studentId}`).style.display = 'none';
+    document.getElementById(`rejectBtn${studentId}`).style.display = 'none';
+    document.getElementById(`tick${studentId}`).style.display = 'inline';
+  }
+
+  function rejectStudent(studentId) {
+      // Assuming you have a function to handle the rejection logic
+      // For demonstration purposes, we'll just update the status to "Rejected"
+      document.getElementById(`approvalStatus${studentId}`).textContent = 'Rejected';
+      
+      // Hide the buttons and display the cross mark
+    document.getElementById(`rejectBtn${studentId}`).style.display = 'none';
+    document.getElementById(`approveBtn${studentId}`).style.display = 'none';
+      document.getElementById(`cross${studentId}`).style.display = 'inline';
+    }
+   
   const approveButton = document.querySelector('.change-view[data-action="approve"]');
   const rejectButton = document.querySelector('.change-view[data-action="reject"]');
   function displayStudentData() {
@@ -697,8 +850,11 @@ main section[role="chart"].efficiency {
 // Event listener for the "approve student data" button
 approveButton.addEventListener('click', function() {
     // Hide sidebar and other content
+    document.getElementById('approve-student-button').style.display = 'none';
     document.getElementById('Overview').style.display = 'none';
     document.getElementById('Charts').style.display = 'none'; 
+    document.getElementById('searchField').style.display = 'none'; 
+    document.getElementById('studentTable').style.display = 'block'; 
     // Display student data in table format
     displayStudentData();
 });
