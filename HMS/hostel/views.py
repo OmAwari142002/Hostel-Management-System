@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import StudentDetails,Attendance,Complaint
+from .models import StudentDetails,Attendance,Complaint,Rooms
 from django.contrib.auth.decorators import login_required
 import random
 import uuid
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth import logout as django_logout
 from django.views.decorators.cache import never_cache
 from .models import Complaint  # Assuming your model is named 'Complaint'
-
+from django.utils.cache import add_never_cache_headers
 # Create your views here.
 def index(request):
     return render(request,'index.html')
@@ -22,9 +22,9 @@ def index(request):
 def Login(request):
     if request.user.is_authenticated:
         if(request.user.is_superuser):
-            return redirect('/admin-dashboard')
-        elif(request.user.is_staff):
             return redirect('/rector-dashboard')
+        elif(request.user.is_staff):
+            return redirect('/admin-dashboard')
         else:
             return redirect('/student-dashboard')
     
@@ -38,8 +38,10 @@ def logout(request):
     django_logout(request)
     
     request.session.pop('user', None)
-    response = render(request, 'login.html', {'message': 'Logged Out Successfully'})
     
+
+    response = render(request, 'login.html', {'message': 'Logged Out Successfully'})
+    add_never_cache_headers(response)
     return response
 @never_cache
 def verify_login(request):
@@ -279,12 +281,13 @@ def mark_users_as_absent():
 
 
     
-
+@login_required
 def admin_dashboard(request):
     return render(request,'admin_dashboard.html')
-@login_required
+@login_required 
 def rector_dashboard(request):
     student_count=0
+    print(request.user)
     if not request.user.is_authenticated :
         return render(request, 'login.html')
     else:
@@ -434,6 +437,7 @@ def send_otp_email(email, otp):
     message = f'Your OTP for account verification on KJEI Hostel Mangement System is: {otp}  Do not share it with anyone.'
     from_email = settings.EMAIL_HOST_USER
     send_mail(subject, message, from_email, [email])
+@login_required
 def mark_attendance(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -476,3 +480,60 @@ def check_complaint_status(request):
         return issue_type_mapping.get(value, value)
 
     return render(request, 'check_complaint_status.html', {'complaints': complaints, 'get_complaint_issue_type': get_complaint_issue_type})
+
+@login_required
+def pending_approval(request):
+    try:
+        pending_students = User.objects.filter(is_active=False)
+        print(pending_students)
+        return render(request,"pending-approval.html",{"pending_students":pending_students})
+    except:
+        return render(request,"pending-approval.html",{"pending_students":None})
+        
+        
+def populate_rooms(request):
+    for floor in range(10):  # Floors 0 to 9
+        if floor == 0:
+            for room_number in range(1, 41):  # Room numbers 1 to 40 for floor 0
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==1:
+            for room_number in range(101, 141):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==2:
+            for room_number in range(201, 241):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==3:
+            for room_number in range(301, 341):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==4:
+            for room_number in range(401, 441):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==5:
+            for room_number in range(501, 541):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==6:
+            for room_number in range(601, 641):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==7:
+            for room_number in range(701, 741):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==8:
+            for room_number in range(801, 841):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+        elif floor ==9:
+            for room_number in range(901, 941):  # Room numbers 101 to 140 for other floors
+                room = Rooms.objects.create(roomNo=room_number, floorNo=floor)
+                room.save()
+    
+    return render(request,"login.html")
+
+# Call the function to populate the rooms when needed

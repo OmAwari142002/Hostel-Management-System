@@ -1,6 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 import uuid
+class Rooms(models.Model):
+    roomNo = models.IntegerField()
+    floorNo = models.IntegerField()
+    Availability = models.BooleanField(default=True)
+    NoOfOccupents = models.IntegerField(default=0)
+    occupants = models.ManyToManyField(User, related_name='rooms', blank=True)
+    occupants_uuid = ArrayField(models.UUIDField(), default=list)
+    @property
+    def AvailableSpace(self):
+        return 3 - self.NoOfOccupents
+    
+
+# Script to populate rooms in the database
+
 class Attendance(models.Model):
     attendance_choices = [
         ('P', 'Present'),
@@ -59,6 +74,7 @@ class StudentDetails(models.Model):
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_details')
     uuid = models.UUIDField()
+    roomNo = models.IntegerField(default=0)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
