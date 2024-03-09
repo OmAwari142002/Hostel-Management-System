@@ -537,3 +537,26 @@ def populate_rooms(request):
     return render(request,"login.html")
 
 # Call the function to populate the rooms when needed
+
+def notices_page(request):
+    # Add any necessary context data
+    return render(request, 'notices.html')
+
+
+def student_profile_page(request):
+    # Retrieve the currently logged-in user's student details
+    student = request.user.student_details
+
+    return render(request, 'student_profile.html', {'student': student})
+
+
+def notices_page(request):
+    # Add any necessary context data
+    return render(request, 'notices.html')
+
+
+def student_profile_page(request):
+    # Retrieve the currently logged-in user's student details
+    student = request.user.student_details
+
+    return render(request, 'student_profile.html', {'student': student})
