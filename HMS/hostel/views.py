@@ -282,8 +282,21 @@ def mark_users_as_absent():
 
 def admin_dashboard(request):
     return render(request,'admin_dashboard.html')
+@login_required
 def rector_dashboard(request):
-    return render(request,'rector_dashboard.html')
+    student_count=0
+    if not request.user.is_authenticated :
+        return render(request, 'login.html')
+    else:
+        username = request.session.get('user', {}).get('username', '')
+        print(request.session.get('user', {}))
+        try:
+            student_count = StudentDetails.objects.count()
+        except StudentDetails.DoesNotExist:
+            return render(request, 'login.html', {'error': 'Student Details Not Found'})
+
+        
+    return render(request,'rector_dashboard.html',{'student_count':student_count})
 def verify_otp(request):
 
     if request.method == 'POST':
