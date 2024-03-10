@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
     <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"
+      rel="stylesheet"
+    />
+    <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
@@ -14,6 +18,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       rel="stylesheet"
@@ -24,13 +33,15 @@
       body {
         display: flex;
         flex-wrap: wrap;
-        margin: 0; /* Remove default margin */
       }
+      .has-attendance .fc-day-number {
+        color: green; /* Set the color to green */
+    }
       .navbar {
-        background-color: #203153;
+        background-color: #273c66;
         opacity: 0.9;
+
         width: 100%;
-        height: 20%;
       }
       .navbar-brand {
         opacity: 1;
@@ -44,6 +55,85 @@
         border-bottom: 2px solid red !important;
         transition: 0.25s ease-in-out;
         color: red;
+      }
+      #calendar-container {
+        width: 65%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        order: 1; /* Ensure calendar comes first */
+      }
+      #calendar-header {
+        width: 100%;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      #calendar {
+        width: 100%;
+      }
+      .fc-day {
+        border: none; /* Remove border */
+        border-radius: 10px;
+      }
+      .fc-day-number {
+        display: block;
+      }
+      /* For laptop and larger screens */
+      @media screen and (min-width: 768px) {
+        #calendar-container {
+          display: flex;
+          width: 50%; /* Take 50% of the screen */
+          float: right;
+          margin-top: 10px;
+        }
+        #graphs-container {
+          width: 50%; /* Take 50% of the screen */
+          margin-top: 10px;
+        }
+        #doughnut {
+          width: 100%;
+        }
+        #calendar-header button {
+          padding: 8px;
+          font-size: 16px;
+          background: transparent;
+          margin-right: 8px;
+          cursor: pointer;
+        }
+        #calendar-header :hover {
+          background-color: rgb(156, 156, 156);
+        }
+        #doughnut-chart {
+          margin-top: 20px !important;
+          width: 550px;
+          height: 500px;
+        }
+      }
+      /* For mobile and smaller screens */
+      @media screen and (max-width: 767px) {
+        #calendar-container {
+          width: 100%;
+          order: 1;
+        }
+        #graphs-container {
+          width: 100%;
+        }
+        #calendar-header button {
+          padding: 8px;
+          font-size: 12px;
+          background: transparent;
+          margin-right: 6px;
+          margin-top: 15px;
+          cursor: pointer;
+        }
+        #calendar-header :hover {
+          background-color: rgb(156, 156, 156);
+        }
+        #doughnut-chart {
+          margin-top: 20px;
+          width: 150px;
+          height: 150px;
+        }
       }
       .loader {
         border: 16px solid #f3f3f3; /* Light grey */
@@ -78,18 +168,11 @@
         z-index: 999; /* Ensure overlay appears below loader but above other content */
         display: none; /* Initially hidden */
       }
-
-      .dashboard-content {
-        padding: 20px;
-        width: 100%;
-        text-align: center;
-        margin-top: 50px; /* Adjust margin-top to account for the top-bar height */
+      .custom-card-color {
+        background-color: #3498db; /* Replace with your preferred color code */
+        color: white; /* Set text color to white or any contrasting color */
+        /* Add any additional styling as needed */
       }
-    .custom-card-color {
-        background-color: lightblue; 
-        color: rgb(0, 0, 0); 
-    }
-
     </style>
   </head>
   <body>
@@ -126,8 +209,8 @@
                     Students
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="studentsDropdown">
-                    <li><a class="dropdown-item" href="#">Attendance</a></li>
-                    <li><a class="dropdown-item" href="#">Pending Fees</a></li>
+                    <li><a class="dropdown-item" href="attendance_records.html">Attendance</a></li>
+                    <li><a class="dropdown-item" href="pending_fees.html">Pending Fees</a></li>
                 </ul>
 
             </li>
@@ -135,10 +218,10 @@
                 <a class="nav-link active" aria-current="page" href="#">Warden/Rector</a>
               </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Notices</a>
+              <a class="nav-link active" aria-current="page" href="notices.html">Notices</a>
             </li>
             <li class="nav-item ">
-              <a class="nav-link active" aria-current="page" href="#">Complaints</a>
+              <a class="nav-link active" aria-current="page" href="complaints.html">Complaints</a>
             </li>
           </ul>
           <form class="d-flex" action="/logout">
@@ -192,7 +275,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Waiting List</h5>
                         <p class="card-text">Number of students in the waiting list</p>
-                        <h2>5</h2>
+                        <h2>0</h2>
                     </div>
                     </div>
                 </div>
@@ -213,10 +296,10 @@
         var occupancyChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Occupied', 'Vacant'],
+                labels: ['Vacant', 'Occupied'],
                 datasets: [{
-                    label: 'Room Occupancy',
-                    data: [{% occupied_rooms_count %}, {% vacant_rooms_count %}],
+                    label: 'Rooms',
+                    data: [366, 34],
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.5)',
                         'rgba(255, 99, 132, 0.5)',
