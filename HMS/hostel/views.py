@@ -624,14 +624,15 @@ def student_profile_page(request):
 
     return render(request, 'student_profile.html', {'student': student})
 
-
-def notices_page(request):
+def attendance_records(request):
     # Add any necessary context data
-    return render(request, 'notices.html')
+    return render(request, 'attendance_records.html')
 
+def pending_fees(request):
+    # Add any necessary context data
+    return render(request, 'pending_fees.html')
 
-def student_profile_page(request):
-    # Retrieve the currently logged-in user's student details
-    student = request.user.student_details
+def complaints(request):
+    # Add any necessary context data
+    return render(request, 'complaints.html')
 
-    return render(request, 'student_profile.html', {'student': student})

@@ -21,5 +21,9 @@ urlpatterns = [
     path('check-complaint-status', views.check_complaint_status, name='check_complaint_status'),
     path('api/getStudentData',views.get_student_data,name="Student Data"),
     path('api/getStudentinfo/<int:id>/',views.studentInfo,name="Student Info"),
-    path('api/autoAllocate/<int:id>/',views.autoAllocate,name="Auto Allocate")
+    path('api/autoAllocate/<int:id>/',views.autoAllocate,name="Auto Allocate"),
+    path('attendance_records/',views.attendance_records,name="attendance_records"),
+    path('pending_fees/',views.pending_fees,name="pending_fees"),
+    path('complaints/',views.complaints,name="complaints"),
+    
 ]

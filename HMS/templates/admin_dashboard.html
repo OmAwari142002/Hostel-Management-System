@@ -184,7 +184,7 @@
     </div>
     <nav class="navbar navbar-expand-sm">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/admin-dashboard">
           <img
             src="https://kjei.edu.in/admin_upload/27082022050243_889055_logo.png"
             alt="Avatar Logo"
@@ -209,8 +209,8 @@
                     Students
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="studentsDropdown">
-                    <li><a class="dropdown-item" href="attendance_records.html">Attendance</a></li>
-                    <li><a class="dropdown-item" href="pending_fees.html">Pending Fees</a></li>
+                    <li><a class="dropdown-item" href="/attendance_records">Attendance</a></li>
+                    <li><a class="dropdown-item" href="/pending_fees">Pending Fees</a></li>
                 </ul>
 
             </li>
@@ -218,10 +218,10 @@
                 <a class="nav-link active" aria-current="page" href="#">Warden/Rector</a>
               </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="notices.html">Notices</a>
+              <a class="nav-link active" aria-current="page" href="#">Notices</a>
             </li>
             <li class="nav-item ">
-              <a class="nav-link active" aria-current="page" href="complaints.html">Complaints</a>
+              <a class="nav-link active" aria-current="page" href="#">Complaints</a>
             </li>
           </ul>
           <form class="d-flex" action="/logout">
@@ -235,8 +235,8 @@
     </nav>
 
     <!-- Admin Dashboard Content -->
-    <div class="dashboard-content">
-      <h1>Welcome to the Admin Dashboard</h1>
+    <div  class="dashboard-content">
+      <h1  style="padding:20px 50px ">Welcome to the Admin Dashboard</h1>
       <!-- Your admin dashboard content goes here -->
     </div>
     <div class="container mt-5">
@@ -283,8 +283,8 @@
         </div>
         
         <!-- Occupancy Chart -->
-        <div class="row">
-            <div class="col-md-12">
+        <div class="row" >
+            <div class="col-md-9">
                 <canvas id="occupancyChart"></canvas>
             </div>
         </div>
@@ -298,8 +298,8 @@
             data: {
                 labels: ['Vacant', 'Occupied'],
                 datasets: [{
-                    label: 'Rooms',
-                    data: [366, 34],
+                    label: 'Number of Rooms Vacant',
+                    data: [366, 134],
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.5)',
                         'rgba(255, 99, 132, 0.5)',
