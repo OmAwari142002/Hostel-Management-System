@@ -218,6 +218,16 @@
                 timerProgressBar: true,
               });
         {% endif %}
+
+   
+            window.onload = function () {
+                history.pushState(null, null, document.URL);
+                window.addEventListener('popstate', function () {
+                    history.pushState(null, null, document.URL);
+                });
+            }
+      
+        
     </script>
 </body>
 </html>

@@ -1,11 +1,975 @@
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-</head>
-<body>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ <!-- Import Chart.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+  <style>
+ /*NAVBAR*/
+:root {
+  --primary-color: #5B25F5;
+  --secondary-color: #9792c7;
+  --secondary-color-with-opacity: #bab4e21f;
+  --background-color: #F5F5FD;
+  --background-color-hover: #e5e5ec;
+  --text: #9792c7;
+  --white: #fff;
+  --black: #000;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--white);
+  color: var(--primary-color);
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+.navbar {
+  background-color: #fff;
+  height: 100%;
+  display: flex;
+  position: fixed;
+  flex-direction: column;
+  padding: 1.563em;
+  font-weight: 600;
+  width: 18.75em;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.navbar-brand {
+  padding: 2.188em 0em 2em 1em;
+  text-decoration: none;
+  color: var(--secondary-color);
+}
+
+.navbar-brand .icon-container {
+  width: 2em;
+  height: 2em;
+  border-radius: 0.8em;
+  margin-bottom: .5em;
+  padding: 0.5em;
+  background-color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.navbar-brand .icon {
+  width: 2em;
+  height: 2em;
+  background-color: #fff;
+}
+
+.navbar-brand .icon.hexagon {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/hexagon.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/hexagon.svg) no-repeat center;
+}
+
+.navbar-brand .name {
+  padding-top: 0.5em;
+}
+
+ul.navbar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar-nav a {
+  display: flex;
+  color: var(--secondary-color);
+  padding: 1em;
+  text-decoration: none;
+  align-items: center;
+  cursor: pointer;
+}
+
+.navbar-nav a.active {
+  color: var(--primary-color)
+}
+
+.navbar-nav a:not(.active):hover {
+  background-color: var(--background-color-hover);
+}
+
+.navbar-nav .active .icon {
+  background-color: var(--primary-color);
+  width: 2em;
+  height: 2em;
+}
+
+.icon {
+  background-color: var(--secondary-color);
+  width: 2em;
+  height: 2em;
+}
+
+.navbar-nav img {
+  margin-right: .5em;
+}
+
+
+/* Bottombar icons */
+
+.navbar-nav .icon.home {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/home.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/home.svg) no-repeat center;
+}
+
+.navbar-nav .icon.statistics {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/bar-chart-2.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/bar-chart-2.svg) no-repeat center;
+}
+
+.navbar-nav .icon.mail {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/mail.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/mail.svg) no-repeat center;
+}
+
+.navbar-nav .icon.user {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/user.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/user.svg) no-repeat center;
+}
+
+.navbar-nav .icon.file {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/file.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/file.svg) no-repeat center;
+}
+.navbar-nav .icon.logout {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' viewBox='0 0 512 512'%3E%3Cpath d='M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z'/%3E%3C/svg%3E") no-repeat center;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' viewBox='0 0 512 512'%3E%3Cpath d='M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z'/%3E%3C/svg%3E") no-repeat center;
   
+}
+.navbar-footer .image-documents {
+  width: 100%;
+  margin-bottom: -8em;
+  position: relative;
+  z-index: 1
+}
+
+.navbar-footer .container {
+  background-color: var(--background-color);
+  margin: .5em;
+  padding: 1.688em;
+  padding-top: 6em;
+  display: flex;
+  flex-direction: column;
+  font-weight: normal;
+  border-radius: 1.3em;
+  position: relative;
+  bottom: 0;
+  box-sizing: border-box;
+}
+
+.navbar-footer h2 {
+  margin-bottom: 0.25em;
+  color: var(--black);
+}
+
+.navbar-footer span {
+  color: var(--text);
+  font-size: .8em;
+}
+
+.navbar-footer a {
+  color: var(--white);
+  background-color: var(--primary-color);
+  text-decoration: none;
+  text-align: center;
+  padding: 1em;
+  border-radius: 1.3em;
+  margin-top: 1em;
+}
+
+@media screen and (max-width: 768px) {
+  /* Tablet (768px) */
+  .navbar {
+      bottom: 0;
+      width: 100%;
+      height: auto;
+      padding: 0.1em;
+      position: fixed;
+      margin: 0;
+      border-top: 1px solid var(--background-color);
+  }
+  .navbar-brand {
+      display: none;
+  }
+  .navbar-nav {
+      display: flex;
+      width: 100%;
+      height: auto;
+      justify-content: space-around;
+  }
+  .navbar-nav a {
+      float: left;
+      font-size: 0.8em;
+      padding: 1em 0.5em;
+  }
+  .navbar-nav .icon {
+      width: 2em;
+      height: 2em;
+  }
+  .navbar-nav img {
+      margin-right: .5em;
+  }
+  .navbar-footer {
+      display: none;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  /* Phone (Large)*/
+  .navbar-nav {
+      position: relative;
+      bottom: 0;
+      display: flex;
+      justify-content: space-around;
+  }
+  .navbar-nav a {
+      flex-direction: column;
+      align-items: center;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  /* Phone (Small) */
+  .navbar-nav span {
+      display: none;
+  }
+}
+/*HEADER*/
+main {
+  margin-top: 1em;
+  margin-right: 1em;
+  border-radius: 2.5em;
+  margin-left: 18.75em;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-color);
+  padding: 2.3em;
+}
+
+main header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+main header .icon.search {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/search.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/search.svg) no-repeat center;
+}
+
+main header .form-inline {
+  display: flex;
+  width: 100%;
+}
+
+main header input[type="search"] {
+  border: none;
+  background: none;
+  margin-left: 0.5em;
+  outline: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: 100%;
+  -webkit-appearance: none;
+}
+
+main header button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: 2px solid;
+  border-color: var(--secondary-color-with-opacity);
+  outline: none;
+  border-radius: 0.8em;
+  padding: .8em 1.2em;
+  color: var(--text);
+  font-weight: 600;
+}
+
+main header button.change-view {
+  margin-right: 1.2em;
+}
+
+main header button.notification {
+  border: none;
+}
+
+main header button.menu {
+  border: none;
+}
+
+main header .change-view .icon {
+  margin-right: 0.5em;
+}
+
+main header .icon.search {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/search.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/search.svg) no-repeat center;
+}
+
+main header section[role="application"] {
+  display: flex;
+}
+
+main header .icon.layout {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/layout.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/layout.svg) no-repeat center;
+}
+.main header .icon.plus {
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' width='17.5' viewBox='0 0 448 512'%3E%3Cpath d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/%3E%3C/svg%3E") no-repeat center;
+  mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' width='17.5' viewBox='0 0 448 512'%3E%3Cpath d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/%3E%3C/svg%3E") no-repeat center;
+}
+
+.main header .icon.reject {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' width='15' viewBox='0 0 384 512'%3E%3Cpath d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E") no-repeat center;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' width='15' viewBox='0 0 384 512'%3E%3Cpath d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E") no-repeat center;
+}
+
+main header .icon.notification {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/bell.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/bell.svg) no-repeat center;
+}
+
+main header .icon.menu {
+  -webkit-mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/menu.svg) no-repeat center;
+  mask: url(https://ozcanzaferayan.github.io/financial-crm/icon/menu.svg) no-repeat center;
+}
+
+main h1 {
+  font-size: 3em;
+  color: var(--black);
+  margin-top: 0;
+}
+
+@media screen and (max-width: 768px) {
+  /* Tablet (768px) */
+  main {
+      margin-left: 0;
+      border-radius: 0;
+      margin: 0;
+      padding: 0em;
+  }
+  main header {
+      margin-bottom: 0em;
+      padding: 1em;
+  }
+  main header button.change-view {
+      display: none;
+  }
+  main h1 {
+      display: none;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  /* Phone (Large)*/
+}
+
+@media screen and (max-width: 320px) {
+  /* Phone (Small) */
+  main header button {
+      padding: 0em 1.2em;
+  }
+  main header {
+      padding: 0.5em 0.7em;
+  }
+}
+/*CHARTS*/.charts-wrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+main section[role="credit-card"] {
+  width: 310px;
+  height: 210px;
+  background-color: var(--primary-color);
+  border-radius: 2em;
+  position: relative;
+  margin-left: -4em;
+  margin-bottom: 1em;
+  padding: 2em;
+  box-sizing: border-box;
+  -webkit-box-shadow: 10px 10px 46px -6px rgba(104, 87, 150, 1);
+  -moz-box-shadow: 10px 10px 46px -6px rgba(104, 87, 150, 1);
+  box-shadow: 10px 10px 46px -6px rgba(104, 87, 150, 1);
+}
+
+main section[role="credit-card"] img {
+  width: 4em;
+  height: 100%;
+}
+
+main section[role="credit-card"] img.apple_pay {
+  width: 3em;
+}
+
+main section[role="credit-card"] .top {
+  display: flex;
+  justify-content: space-between;
+}
+
+main section[role="credit-card"] .ccNumber {
+  margin-top: 1.3em;
+  display: flex;
+  justify-content: space-between;
+  color: var(--white);
+  font-family: monospace;
+  font-size: 1.2rem;
+}
+
+.ccBottom {
+  margin-top: 1.2em;
+  display: flex;
+  justify-content: space-between;
+  color: var(--white);
+}
+
+.ccValidThru,
+.ccCardHolder {
+  display: flex;
+  flex-direction: column;
+}
+
+.ccCardHolder {
+  margin-right: 1em;
+}
+
+.ccBottom label {
+  opacity: .5;
+  font-size: .7em;
+}
+
+main section[role="chart"] {
+  width: 100%;
+  margin-left: 1em;
+  height: 18em;
+  background-color: var(--white);
+  border-radius: 2em;
+  margin-bottom: 1em;
+  padding: 2em;
+  padding-bottom: 5em;
+  box-sizing: border-box;
+}
+
+section[role="chart"] .title {
+  color: var(--black);
+  font-weight: 700;
+  margin-top: 0;
+}
+
+main section[role="chart"].exchange-rates {
+  width: calc(100% - 270px);
+}
+
+main section[role="chart"].last-costs {
+  width: calc(100% - 350px);
+}
+
+main section[role="chart"].efficiency {
+  width: 310px;
+}
+
+@media screen and (max-width: 1024px) {
+  /* Laptop (1024px) */
+  main section[role="chart"].efficiency {
+      width: 170px;
+  }
+  main section[role="chart"].last-costs {
+      width: calc(100% - 210px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* Tablet (768px) */
+  main section[role="credit-card"] {
+      margin-left: 0;
+  }
+  .charts-wrapper {
+      flex-direction: column;
+  }
+  main section[role="chart"].exchange-rates,
+  main section[role="chart"].last-costs,
+  main section[role="chart"].efficiency {
+      margin-left: 0;
+      width: 100%;
+      padding: 2em;
+      border-radius: 0;
+      padding-bottom: 5em;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  main section[role="chart"].exchange-rates,
+  main section[role="chart"].last-costs,
+  main section[role="chart"].efficiency {
+      padding: 0.5em;
+      padding-bottom: 3em;
+  }
+  main section[role="chart"].efficiency {
+      margin-bottom: 5em;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  /* Phone (Small) */
+  main section[role="credit-card"] {
+      width: 100%;
+      padding: 0.75em;
+      margin-bottom: 0.75em;
+      border-radius: 0;
+      height: initial;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none;
+  }
+  main section[role="credit-card"] img {
+      width: 2em;
+  }
+  main section[role="credit-card"] img.apple_pay {
+      width: 2em;
+  }
+  main section[role="credit-card"] .ccNumber {
+      margin-top: 0.7em;
+  }
+  .ccBottom {
+      margin-top: 0.7em;
+  }
+  section[role="chart"] .title {
+      margin-bottom: 0.2em;
+  }
+  main section[role="chart"].exchange-rates,
+  main section[role="chart"].last-costs,
+  main section[role="chart"].efficiency {
+      height: 12em;
+  }
+  
+}
+
+table {
+  display: none;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 30px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.approveBtn {
+  background-color: #4CAF50;
+  color: white;
+}
+.rejectBtn {
+  background-color: #FF0000;
+  color: white;
+}
+
+.approved {
+  display: none;
+  color: #4CAF50;
+}
+.rejected {
+  display: none;
+  color: #FF0000;
+}
+  </style>
+</head>
+{% comment %} <body> {% endcomment %}
+  
+<body>
+  <nav class="navbar">
+      <a class="navbar-brand" href="#">
+          <div class="icon-container">
+              <img class="icon hexagon" />
+          </div>
+          <span class="name">KJEI-Hostel</span>
+      </a>
+      <ul class="navbar-nav">
+          <li>
+              <a class="active"><img class="icon home" /><span>Home</span></a>
+          </li>
+          <li>
+              <a><img class="icon statistics" /><span>Students Info</span></a>
+          </li>
+          <li>
+              <a><img class="icon mail" /><span>Rooms Info</span></a>
+          </li>
+          <li>
+              <a><img class="icon user" /><span>Complaints</span></a>
+          </li>
+          <li>
+              <a><img class="icon file" /><span>Notices</span></a>
+          </li>
+          <li>
+            <li>
+              <a><img class="icon logout" /><span>Logout </span></a>
+          </li>
+          
+        </li>
+      </ul>
+      <div class="navbar-footer">
+          <img class="image-documents" src="https://ozcanzaferayan.github.io/financial-crm/img/documents.svg" alt="documents" />
+          <div class="container">
+              <h2>PDF Report</h2>
+              <span>Annual detailed report</span>
+              <a href="#" download>Download</a>
+          </div>
+      </div>
+  </nav>
+  <main id="Name">
+      <header>
+          <section role="search" >
+              <form action="#" method="get">
+                  <div class="form-inline" id='searchField'>
+                      <img class="icon search" />
+                      <input type="search" placeholder="Search" />
+                  </div>
+              </form>
+          </section>
+
+          <section role="application">
+              
+              <button id='approve-student-button' class="change-view" data-action="approve">
+                <img class="icon plus" />Approve Student Data
+            </button> 
+            <button  class="change-view" data-action="reject">
+              <img class="icon reject" /> Reject Student Data
+          </button>
+              
+          </section>
+       
+      </header>
+      <h1 id="Overview">Overview</h1>
+      <div class="charts-wrapper" id="Charts">
+          <section role="credit-card">
+              <div class="top">
+                  <img src="https://ozcanzaferayan.github.io/financial-crm/img/mastercard.svg" />
+              
+              </div>
+              <div class="ccNumber">
+                  <span>Students Count</span>
+              </div>
+              <div class="ccBottom">
+                  <div class="ccValidThru">
+                      <label>Total</label>
+                      <span>{{student_count}}</span>
+                  </div>
+                 
+              </div>
+          </section>
+          <section role="chart" class="exchange-rates">
+            <div class="top">
+              <img src="https://ozcanzaferayan.github.io/financial-crm/img/mastercard.svg" />
+          
+          </div>
+          <div class="ccNumber">
+              <span>Students Count</span>
+          </div>
+          <div class="ccBottom">
+              <div class="ccValidThru">
+                  <label>Total</label>
+                  <span>{{student_count}}</span>
+              </div>
+             
+          </div>
+          </section>
+          <section role="chart" class="last-costs">
+              <h3 class="title">Students Attendance (last 10 Months)</h3>
+              <canvas id="last_costs"></canvas>
+
+          </section>
+          <section role="chart" class="efficiency">
+              <h3 class="title">Fees Paid</h3>
+              <canvas id="efficiency"></canvas>
+
+          </section>
+      </div>
+      <div>
+      <section>
+        
+
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>College</th>
+            <th>Approval Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr >
+              <td>1</td>
+              <td >Mike Johnson</td>
+              <td >Trinity Academy of Enginerring</td>
+              <td id="approvalStatus1" >Pending</td>
+              
+              <td >
+
+                <button id="approveBtn1" class="approveBtn" data-student-id="1" onclick="approveStudent(1)"  >
+                  Approve
+                </button>
+
+                <button id='rejectBtn1' class="rejectBtn" data-student-id="1"  onclick="rejectStudent(1)">Reject</button>
+                
+                <span id="tick1" style="display: none; color:green">
+                  <i class="fas fa-check"></i> Approved
+                </span>
+                
+                <span  class="rejected" style="display: none; color:red" id="cross1"><i class="fas fa-times"></i> Rejected</span>
+              
+              </td>
+            </tr>
+
+
+            <tr >
+              <td>2</td>
+              <td >Mike Johnson</td>
+              <td >Trinity Academy of Enginerring</td>
+              <td id="approvalStatus2" >Pending</td>
+              
+              <td >
+
+                <button id="approveBtn2" class="approveBtn" data-student-id="2" onclick="approveStudent(2)"  >
+                  Approve
+                </button>
+
+                <button id='rejectBtn2' class="rejectBtn" data-student-id="2"  onclick="rejectStudent(2)">Reject</button>
+                
+                <span id="tick2" style="display: none; color:green">
+                  <i class="fas fa-check"></i> Approved
+                </span>
+                
+                <span  class="rejected" style="display: none; color:red" id="cross2"><i class="fas fa-times"></i> Rejected</span>
+              
+              </td>
+            </tr>
+
+            <tr >
+              <td>3</td>
+              <td >Mike Johnson</td>
+              <td >Trinity Academy of Enginerring</td>
+              <td id="approvalStatus3" >Pending</td>
+              
+              <td >
+
+                <button id="approveBtn3" class="approveBtn" data-student-id="3" onclick="approveStudent(3)"  >
+                  Approve
+                </button>
+
+                <button id='rejectBtn3' class="rejectBtn" data-student-id="3"  onclick="rejectStudent(3)">Reject</button>
+                
+                <span id="tick3" style="display: none; color:green">
+                  <i class="fas fa-check"></i> Approved
+                </span>
+                
+                <span  class="rejected" style="display: none; color:red" id="cross3"><i class="fas fa-times"></i> Rejected</span>
+              
+              </td>
+            </tr>
+
+        </tbody>
+      </table>
+      </section>
+      </div>
+     
+  </main>
+  
+  
+</body>
+
+<script>
+  function approveStudent(studentId) {
+    // Assuming you have a function to handle the approval logic
+    // For demonstration purposes, we'll just update the status to "Approved"
+    document.getElementById(`approvalStatus${studentId}`).textContent = 'Approved';
+    
+    // Hide the button and display the tick mark
+    document.getElementById(`approveBtn${studentId}`).style.display = 'none';
+    document.getElementById(`rejectBtn${studentId}`).style.display = 'none';
+    document.getElementById(`tick${studentId}`).style.display = 'inline';
+  }
+
+  function rejectStudent(studentId) {
+      // Assuming you have a function to handle the rejection logic
+      // For demonstration purposes, we'll just update the status to "Rejected"
+      document.getElementById(`approvalStatus${studentId}`).textContent = 'Rejected';
+      
+      // Hide the buttons and display the cross mark
+    document.getElementById(`rejectBtn${studentId}`).style.display = 'none';
+    document.getElementById(`approveBtn${studentId}`).style.display = 'none';
+      document.getElementById(`cross${studentId}`).style.display = 'inline';
+    }
+   
+  const approveButton = document.querySelector('.change-view[data-action="approve"]');
+  const rejectButton = document.querySelector('.change-view[data-action="reject"]');
+  function displayStudentData() {
+    // Fetch data from API (Replace 'apiEndpoint' with your API endpoint)
+    fetch('apiEndpoint')
+        .then(response => response.json())
+        .then(data => {
+            // Generate table HTML
+            let tableHtml = '<table id="studentTable"><thead><tr><th>Name</th><th>Age</th><th>Grade</th></tr></thead><tbody>';
+            // Populate table rows with fetched data
+            data.forEach(student => {
+                tableHtml += `<tr><td>${student.name}</td><td>${student.age}</td><td>${student.grade}</td></tr>`;
+            });
+            tableHtml += '</tbody></table>';
+            // Replace content with the generated table
+            document.getElementById('content').innerHTML = tableHtml;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+// Event listener for the "approve student data" button
+approveButton.addEventListener('click', function() {
+    // Hide sidebar and other content
+    document.getElementById('approve-student-button').style.display = 'none';
+    document.getElementById('Overview').style.display = 'none';
+    document.getElementById('Charts').style.display = 'none'; 
+    document.getElementById('searchField').style.display = 'none'; 
+    document.getElementById('studentTable').style.display = 'block'; 
+    // Display student data in table format
+    displayStudentData();
+});
+
+rejectButton.addEventListener('click', function () {
+    window.location.href = '/remove-student';
+});
+</script>
+<script>
+
+/*LAST COSTS*/
+var data = {
+  labels: ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov"],
+  datasets: [{
+      label: 'Absent',
+      backgroundColor: "rgba(91,37,245, 0.2)",
+      data: [500, 300, 800, 150, 200, 150, 800, 200, 800, 100],
+  }, {
+      label: 'Present',
+      backgroundColor: "rgba(91,37,245, 1)",
+      data: [1000, 800, 1800, 1100, 1000, 800, 1800, 1600, 1800, 1200],
+  }, ]
+};
+
+var options = {
+  cornerRadius: 0,
+  maintainAspectRatio: false,
+  legend: {
+      position: 'bottom',
+      labels: {
+          fontColor: "rgba(0,0,0, 0.5)",
+          boxWidth: 20,
+          padding: 10
+      }
+  },
+  scales: {
+      yAxes: [{
+          gridLines: {
+              display: true,
+              color: "rgba(91,37,245, 0.03)"
+          },
+          ticks: {
+              maxTicksLimit: 5,
+          }
+      }],
+      xAxes: [{}]
+  }
+};
+
+
+var ctx = document.getElementById('last_costs').getContext('2d');
+var myLineChart = new Chart(ctx, {
+  type: 'bar',
+  data: data,
+  options: options
+});
+
+/*EFFICIENCY CHART*/
+
+var data = {
+  labels: ["Spend", "Earned"],
+  datasets: [{
+      label: "Population (millions)",
+      backgroundColor: ["rgba(91,37,245, 1)", "#dad7e9"],
+      data: [65, 35]
+  }]
+};
+
+var options = {
+  maintainAspectRatio: false,
+  legend: {
+      position: 'bottom',
+      labels: {
+          fontColor: "rgba(0,0,0, 0.5)",
+          boxWidth: 20,
+          padding: 10
+      }
+  },
+};
+
+
+var ctx = document.getElementById('efficiency').getContext('2d');
+var myLineChart = new Chart(ctx, {
+  type: 'doughnut',
+  data: data,
+  options: options
+});
+  document.addEventListener('DOMContentLoaded', function () {
+    const navToggle = document.getElementById('nav-toggle');
+    const navFooterToggle = document.getElementById('nav-footer-toggle');
+    const navHeader = document.getElementById('nav-header');
+    const navContent = document.getElementById('nav-content');
+    const navFooter = document.getElementById('nav-footer');
+  
+    navToggle.addEventListener('change', function () {
+      if (this.checked) {
+        navHeader.style.width = `calc(var(--navbar-width-min) - 16px)`;
+        navContent.style.width = `var(--navbar-width-min)`;
+        navFooter.style.width = `var(--navbar-width-min)`;
+      } else {
+        navHeader.style.width = `var(--navbar-width)`;
+        navContent.style.width = `var(--navbar-width)`;
+        navFooter.style.width = `var(--navbar-width)`;
+      }
+    });
+  
+    navFooterToggle.addEventListener('change', function () {
+      if (this.checked) {
+        navFooter.style.height = `30%`;
+      } else {
+        navFooter.style.height = `54px`;
+      }
+    });
+  });
+  
+</script>
 </body>
 </html>
