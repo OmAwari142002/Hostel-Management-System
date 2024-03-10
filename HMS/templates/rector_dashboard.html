@@ -586,7 +586,36 @@ main section[role="chart"].efficiency {
 .form-group {
   margin-bottom: 20px;
 }
+#studentTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
 
+#studentTable th, #studentTable  td  {
+  padding: 30px 70px;
+    text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#studentTable th {
+  background-color: #f2f2f2;
+}
+
+/* Style the "Show Details" button */
+.detailsButton {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.detailsButton:hover {
+  background-color: #45a049;
+}
   </style>
 </head>
 {% comment %} <body> {% endcomment %}
@@ -601,7 +630,7 @@ main section[role="chart"].efficiency {
       </a>
       <ul class="navbar-nav">
           <li>
-              <a class="active"><img class="icon home" /><span>Home</span></a>
+              <a class="active" href='/rector-dashboard'><img class="icon home" /><span>Home</span></a>
           </li>
           <li>
               <a><img class="icon statistics" /><span>Students Info</span></a>
@@ -697,7 +726,7 @@ main section[role="chart"].efficiency {
       </div>
       <div>
       <section>
-        <div id="overlayModal" class="overlay">
+        <div id="overlayModal" class="overlay" >
           <div class="overlay-content">
             <h5 class="modal-title" id="studentModalLabel">Student Details</h5>
             <form id="studentDetailsForm" onsubmit="autoAllocate(event)">
@@ -747,13 +776,10 @@ main section[role="chart"].efficiency {
           </div>
         </div>
         
-        
-        
-
-        <table class="table table-hover" id="studentTable">
+        <table class="table table-hover" id="studentTable" style='display:none'>
           <thead>
             <tr>
-              <th scope="col">#</th>
+              <th scope="col">ID</th>
               <th scope="col">Name</th>
               <th scope="col">Email</th>
               <th scope="col">Is Active</th>
@@ -811,12 +837,17 @@ main section[role="chart"].efficiency {
   const approveButton = document.querySelector('.change-view[data-action="approve"]');
   const rejectButton = document.querySelector('.change-view[data-action="reject"]');
   function fetchAndDisplayStudentDetails(id) {
+    console.log('Fetching student details for ID:', id);
     fetch(`/api/getStudentinfo/${id}`)
       .then(response => response.json())
-      .then(data => {
+      .then(
+      data => {
+      console.log(data);  
+      
+
         const studentInfo = data.studentInfo[0];
         currentStudentId = data.user_info[0].id;
-        document.getElementById('firstName').value = studentInfo.first_name;
+        document.getElementById('firstName').value = studentInfo.first_name ;
         document.getElementById('lastName').value = studentInfo.last_name;
         document.getElementById('email').value = studentInfo.email;
         document.getElementById('address').value = studentInfo.address;
@@ -860,8 +891,9 @@ main section[role="chart"].efficiency {
                               <td>${email}</td>
                               <td>${isActive}</td>
                               <td>
-                                <button class="btn btn-primary" onclick="fetchAndDisplayStudentDetails(${id})">Show Details</button>
+                                <button class="btn btn-primary" onclick="fetchAndDisplayStudentDetails(${id})" >Show Details</button>
                               </td>
+                              
                             </tr>`;
                 // Append the row to the table body
                 tbody.innerHTML += row;
