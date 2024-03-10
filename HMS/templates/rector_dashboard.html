@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
  <!-- Import Chart.js library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
@@ -560,40 +563,30 @@ main section[role="chart"].efficiency {
   }
   
 }
-
-table {
+.overlay {
   display: none;
-  border-collapse: collapse;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Adjust transparency as needed */
+}
+.overlay-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 60%; /* Set width to cover at least 60% of viewport */
+}
+.form-group {
+  margin-bottom: 20px;
 }
 
-th, td {
-  padding: 30px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-.approveBtn {
-  background-color: #4CAF50;
-  color: white;
-}
-.rejectBtn {
-  background-color: #FF0000;
-  color: white;
-}
-
-.approved {
-  display: none;
-  color: #4CAF50;
-}
-.rejected {
-  display: none;
-  color: #FF0000;
-}
   </style>
 </head>
 {% comment %} <body> {% endcomment %}
@@ -631,11 +624,7 @@ th {
       </ul>
       <div class="navbar-footer">
           <img class="image-documents" src="https://ozcanzaferayan.github.io/financial-crm/img/documents.svg" alt="documents" />
-          <div class="container">
-              <h2>PDF Report</h2>
-              <span>Annual detailed report</span>
-              <a href="#" download>Download</a>
-          </div>
+         
       </div>
   </nav>
   <main id="Name">
@@ -708,92 +697,71 @@ th {
       </div>
       <div>
       <section>
+        <div id="overlayModal" class="overlay">
+          <div class="overlay-content">
+            <h5 class="modal-title" id="studentModalLabel">Student Details</h5>
+            <form id="studentDetailsForm" onsubmit="autoAllocate(event)">
+              <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" class="form-control" id="firstName" readonly>
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" class="form-control" id="lastName" readonly>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" readonly>
+              </div>
+              <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" class="form-control" id="address" readonly>
+              </div>
+              <div class="form-group">
+                <label for="branch">Branch</label>
+                <input type="text" class="form-control" id="branch" readonly>
+              </div>
+              <div class="form-group">
+                <label for="year">Year</label>
+                <input type="text" class="form-control" id="year" readonly>
+              </div>
+              <div class="form-group">
+                <label for="parentName">Parent Name</label>
+                <input type="text" class="form-control" id="parentName" readonly>
+              </div>
+              <div class="form-group">
+                <label for="parentMobile">Parent Mobile</label>
+                <input type="text" class="form-control" id="parentMobile" readonly>
+              </div>
+              <div class="form-group">
+                <label for="studentMobile">Student Mobile</label>
+                <input type="text" class="form-control" id="studentMobile" readonly>
+              </div>
+              <div class="form-group">
+                <label for="RoomNo">Room No </label>
+                <input type="text" class="form-control" id="RoomNo" >
+                <input type="submit" class="form-control" value="Auto Allocate Room No"> 
+              </div>
+            </form>
+            <button type="button" class="btn btn-secondary" onclick="closeOverlay()">Close</button>
+          </div>
+        </div>
+        
+        
         
 
-      <table id="studentTable">
-        <thead>
-          <tr>
-            <th>Student ID</th>
-            <th>Name</th>
-            <th>College</th>
-            <th>Approval Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          
-            <tr >
-              <td>1</td>
-              <td >Mike Johnson</td>
-              <td >Trinity Academy of Enginerring</td>
-              <td id="approvalStatus1" >Pending</td>
-              
-              <td >
-
-                <button id="approveBtn1" class="approveBtn" data-student-id="1" onclick="approveStudent(1)"  >
-                  Approve
-                </button>
-
-                <button id='rejectBtn1' class="rejectBtn" data-student-id="1"  onclick="rejectStudent(1)">Reject</button>
-                
-                <span id="tick1" style="display: none; color:green">
-                  <i class="fas fa-check"></i> Approved
-                </span>
-                
-                <span  class="rejected" style="display: none; color:red" id="cross1"><i class="fas fa-times"></i> Rejected</span>
-              
-              </td>
+        <table class="table table-hover" id="studentTable">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Is Active</th>
+              <th scope="col">Action</th>
             </tr>
-
-
-            <tr >
-              <td>2</td>
-              <td >Mike Johnson</td>
-              <td >Trinity Academy of Enginerring</td>
-              <td id="approvalStatus2" >Pending</td>
-              
-              <td >
-
-                <button id="approveBtn2" class="approveBtn" data-student-id="2" onclick="approveStudent(2)"  >
-                  Approve
-                </button>
-
-                <button id='rejectBtn2' class="rejectBtn" data-student-id="2"  onclick="rejectStudent(2)">Reject</button>
-                
-                <span id="tick2" style="display: none; color:green">
-                  <i class="fas fa-check"></i> Approved
-                </span>
-                
-                <span  class="rejected" style="display: none; color:red" id="cross2"><i class="fas fa-times"></i> Rejected</span>
-              
-              </td>
-            </tr>
-
-            <tr >
-              <td>3</td>
-              <td >Mike Johnson</td>
-              <td >Trinity Academy of Enginerring</td>
-              <td id="approvalStatus3" >Pending</td>
-              
-              <td >
-
-                <button id="approveBtn3" class="approveBtn" data-student-id="3" onclick="approveStudent(3)"  >
-                  Approve
-                </button>
-
-                <button id='rejectBtn3' class="rejectBtn" data-student-id="3"  onclick="rejectStudent(3)">Reject</button>
-                
-                <span id="tick3" style="display: none; color:green">
-                  <i class="fas fa-check"></i> Approved
-                </span>
-                
-                <span  class="rejected" style="display: none; color:red" id="cross3"><i class="fas fa-times"></i> Rejected</span>
-              
-              </td>
-            </tr>
-
-        </tbody>
-      </table>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
       </section>
       </div>
      
@@ -803,6 +771,21 @@ th {
 </body>
 
 <script>
+  let currentStudentId ="";
+  function autoAllocate(e) {
+    e.preventDefault();
+    console.log("Here");
+    console.log(currentStudentId);
+
+    fetch(`/api/autoAllocate/${currentStudentId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Assign the room number to the RoomNo input field
+            document.getElementById('RoomNo').value = data.room_no;
+        })
+        .catch(error => console.error('Error allocating room:', error));
+}
+
   function approveStudent(studentId) {
     // Assuming you have a function to handle the approval logic
     // For demonstration purposes, we'll just update the status to "Approved"
@@ -827,25 +810,68 @@ th {
    
   const approveButton = document.querySelector('.change-view[data-action="approve"]');
   const rejectButton = document.querySelector('.change-view[data-action="reject"]');
+  function fetchAndDisplayStudentDetails(id) {
+    fetch(`/api/getStudentinfo/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        const studentInfo = data.studentInfo[0];
+        currentStudentId = data.user_info[0].id;
+        document.getElementById('firstName').value = studentInfo.first_name;
+        document.getElementById('lastName').value = studentInfo.last_name;
+        document.getElementById('email').value = studentInfo.email;
+        document.getElementById('address').value = studentInfo.address;
+        document.getElementById('branch').value = studentInfo.branch;
+        document.getElementById('year').value = studentInfo.year;
+        document.getElementById('parentName').value = studentInfo.parent_name;
+        document.getElementById('parentMobile').value = studentInfo.parent_mobile;
+        document.getElementById('studentMobile').value = studentInfo.student_mobile;
+        document.getElementById('RoomNo').value="";
+        document.getElementById('overlayModal').style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error fetching student details:', error);
+      });
+  }
+
+  function closeOverlay() {
+    document.getElementById('overlayModal').style.display = 'none';
+  }
   function displayStudentData() {
     // Fetch data from API (Replace 'apiEndpoint' with your API endpoint)
-    fetch('apiEndpoint')
+    fetch('/api/getStudentData')
         .then(response => response.json())
         .then(data => {
-            // Generate table HTML
-            let tableHtml = '<table id="studentTable"><thead><tr><th>Name</th><th>Age</th><th>Grade</th></tr></thead><tbody>';
-            // Populate table rows with fetched data
-            data.forEach(student => {
-                tableHtml += `<tr><td>${student.name}</td><td>${student.age}</td><td>${student.grade}</td></tr>`;
+            // Assuming the API returns an array of student objects
+            const studentData = data.pending_students;
+            console.log(studentData);
+            const tbody = document.getElementById('tbody');
+            // Clear the table body
+            tbody.innerHTML = '';
+            // Loop through the student data and add rows to the table
+            studentData.forEach((student, index) => {
+                const id = student.id;
+                const name = student.first_name + ' ' + student.last_name;
+                const email = student.email;
+                const isActive = student.is_active;
+
+                const row = `<tr>
+                              <td>${index + 1}</td>
+                              <td>${name}</td>
+                              <td>${email}</td>
+                              <td>${isActive}</td>
+                              <td>
+                                <button class="btn btn-primary" onclick="fetchAndDisplayStudentDetails(${id})">Show Details</button>
+                              </td>
+                            </tr>`;
+                // Append the row to the table body
+                tbody.innerHTML += row;
             });
-            tableHtml += '</tbody></table>';
-            // Replace content with the generated table
-            document.getElementById('content').innerHTML = tableHtml;
         })
         .catch(error => {
             console.error('Error fetching data:', error);
         });
 }
+
 
 // Event listener for the "approve student data" button
 approveButton.addEventListener('click', function() {

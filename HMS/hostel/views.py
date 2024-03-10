@@ -300,6 +300,20 @@ def rector_dashboard(request):
 
         
     return render(request,'rector_dashboard.html',{'student_count':student_count})
+from django.core.serializers import serialize
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
+@login_required
+def get_student_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "User is not authenticated"}, status=404)
+    else:
+        pending_students = User.objects.filter(is_active=False)
+        # Serialize queryset to a list of dictionaries
+        serialized_students = list(pending_students.values())
+        return JsonResponse({"pending_students": serialized_students}, status=200)
 def verify_otp(request):
 
     if request.method == 'POST':
@@ -458,6 +472,67 @@ def mark_attendance(request):
 
 from django.shortcuts import render
 from .models import Complaint
+def studentInfo(request,id):
+    student_info = StudentDetails.objects.filter(user=id)
+    user_info = User.objects.filter(id = id)
+    serialized_student_info = list(student_info.values())
+    serialized_user_info =list(user_info.values())
+    return JsonResponse({'studentInfo':serialized_student_info,'user_info':serialized_user_info},status=200)
+def autoAllocate(request, id):
+    # Fetch student information
+    student_info = StudentDetails.objects.filter(user=id).first()
+    if not student_info:
+        return JsonResponse({'error': 'Student not found'}, status=404)
+    
+    # Fetch user information
+    user_info = User.objects.filter(id=id).first()
+    if not user_info:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    # Determine the gender of the student
+    gender = student_info.gender
+
+    # Determine the floor range based on gender
+    if gender == 'female':
+        floor_range = range(3)  # Floors 0, 1, and 2 for females
+    else:
+        floor_range = range(3, 9)  # Floors 3 to 8 for males
+
+    # Iterate over the floor range to find a suitable room
+    for floor_number in floor_range:
+        # Query rooms on the current floor with the same branch, year, and department
+        rooms_on_floor = Rooms.objects.filter(
+            floorNo=floor_number,
+            Availability=True,
+            NoOfOccupents__lt=3, 
+        )
+        # Iterate over rooms to find an available room
+        for room in rooms_on_floor:
+            occupants_uuids = room.occupants_uuid
+            occupants_details = StudentDetails.objects.filter(uuid__in=occupants_uuids)
+            branch_match = all([occupant.branch == student_info.branch for occupant in occupants_details])
+            department_match = all([occupant.department == student_info.department for occupant in occupants_details])
+            if branch_match and department_match:
+                # Room found, allocate the room
+                return JsonResponse({
+                    'status': 'Room allocated successfully',
+                    'room_no': room.roomNo,
+                    'floor': floor_number,
+                }, status=200)
+    vacant_rooms = Rooms.objects.filter(Availability=True, NoOfOccupents=0)
+    if vacant_rooms.exists():
+        # Allocate the first vacant room found
+        vacant_room = vacant_rooms.first()
+        vacant_room.NoOfOccupents = 1
+        vacant_room.save()
+        return JsonResponse({
+            'status': 'Room allocated successfully',
+            'room_no': vacant_room.roomNo,
+            'floor': vacant_room.floorNo,
+        }, status=200)
+
+    # No suitable room found, return an error response
+    return JsonResponse({'error': 'No suitable room available'}, status=404)
 
 def check_complaint_status(request):
     # Get complaints for the current user (adjust the condition based on your actual model)
