@@ -1,0 +1,145 @@
+<!-- attendance_records.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Records</title>
+    <style>
+        /* Add this CSS to your attendance_records.html or create a new CSS file */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Filter section styles */
+label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+select {
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+}
+
+thead {
+    background-color: #3498db;
+    color: #fff;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Hover effect on table rows */
+tbody tr:hover {
+    background-color: #dff9fb;
+    transition: background-color 0.3s;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Attendance Records</h1>
+
+    <!-- Filter options -->
+    <label for="college">College:</label>
+    <select id="college" onchange="filterRecords()">
+        <option value="">All</option>
+        <option value="Trinity Academy of Engineering">Trinity Academy of Engineering</option>
+        <option value="Trinity College of Engineering and Research">Trinity College of Engineering and Research</option>
+        <option value="KJ College of Engineering and Research">KJ College of Engineering and Research</option>
+        <!-- Add other college options -->
+
+    </select>
+
+    <label for="department">Department:</label>
+    <select id="department" onchange="filterRecords()">
+        <option value="">All</option>
+        <option value="Mechanical">Mechanical</option>
+        <option value="Civil">Civil</option>
+        <option value="Computer">Computer</option>
+        <option value="Information Technology">Information Technology</option>
+        <option value="EnTC">EnTC</option>
+        <option value="MCA">MCA</option>
+        <!-- Add other department options -->
+    </select>
+
+    <!-- Table for attendance records -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>College</th>
+                <th>Department</th>
+                <th>Attendance Percentage</th>
+            </tr>
+        </thead>
+        <tbody id="records-body">
+            <!-- Populate this section dynamically using JavaScript -->
+            {% for record in records %}
+                <tr>
+                    <td>{{ record.student_id }}</td>
+                    <td>{{ record.name }}</td>
+                    <td>{{ record.college }}</td>
+                    <td>{{ record.department }}</td>
+                    <td>{{ record.attendance_percentage }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function filterRecords() {
+            // Get selected filter values
+            var collegeFilter = document.getElementById("college").value;
+            var departmentFilter = document.getElementById("department").value;
+
+            // Perform filtering and update the table
+            var recordsBody = document.getElementById("records-body");
+            var rows = recordsBody.getElementsByTagName("tr");
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var college = row.cells[2].innerText;
+                var gender = row.cells[3].innerText;
+                var department = row.cells[4].innerText;
+
+                // Check if the row meets the filter criteria
+                var showRow =
+                    (collegeFilter === "" || college === collegeFilter) &&
+                    (genderFilter === "" || gender === genderFilter) &&
+                    (departmentFilter === "" || department === departmentFilter);
+
+                // Show or hide the row based on the filter
+                row.style.display = showRow ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
