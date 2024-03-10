@@ -1,101 +1,284 @@
-<!-- attendance_records.html -->
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Attendance Records</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <style>
-        /* Add this CSS to your attendance_records.html or create a new CSS file */
+      body {
+        display: flex;
+        flex-wrap: wrap;
+        background-color: #f4f4f4;
+        margin: 0;
+      }
+      .navbar {
+        background-color: #273c66;
+        opacity: 0.9;
+        width: 100%;
+      }
+      .navbar-brand {
+        opacity: 1;
+      }
+      .navbar-nav .nav-link {
+        font-size: 20px;
+        
+        color: white !important;
+      }
+      .nav-link:hover {
+        border-bottom: 2px solid red !important;
+        transition: 0.25s ease-in-out;
+        color: red;
+      }
+      #calendar-container {
+        width: 65%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        order: 1; /* Ensure calendar comes first */
+      }
+      
+      .fc-day {
+        border: none; /* Remove border */
+        border-radius: 10px;
+      }
+      .fc-day-number {
+        display: block;
+      }
+      /* For laptop and larger screens */
+      @media screen and (min-width: 768px) {
+        #calendar-container {
+          display: flex;
+          width: 50%; /* Take 50% of the screen */
+          float: right;
+          margin-top: 10px;
+        }
+        #graphs-container {
+          width: 50%; /* Take 50% of the screen */
+          margin-top: 10px;
+        }
+        #doughnut {
+          width: 100%;
+        }
+        #calendar-header button {
+          padding: 8px;
+          font-size: 16px;
+          background: transparent;
+          margin-right: 8px;
+          cursor: pointer;
+        }
 
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
+      }
+      /* For mobile and smaller screens */
+      @media screen and (max-width: 767px) {
+        #calendar-container {
+          width: 100%;
+          order: 1;
+        }
+        #graphs-container {
+          width: 100%;
+        }
+        #calendar-header button {
+          padding: 8px;
+          font-size: 12px;
+          background: transparent;
+          margin-right: 6px;
+          margin-top: 15px;
+          cursor: pointer;
+        }
+        #calendar-header :hover {
+          background-color: rgb(156, 156, 156);
+        }
+        #doughnut-chart {
+          margin-top: 20px;
+          width: 150px;
+          height: 150px;
+        }
+      }
+      .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 1000; /* Ensure loader appears on top of other content */
+      }
 
-h1 {
-    text-align: center;
-    color: #333;
-}
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
-/* Filter section styles */
-label {
+      /* Overlay styles */
+      #loader-overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+        top: 0;
+        left: 0;
+        z-index: 999; /* Ensure overlay appears below loader but above other content */
+        display: none; /* Initially hidden */
+      }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+    }
+
+    h1 {
+        color: #333;
+    }
+    label {
     margin-right: 10px;
     font-weight: bold;
     color: #333;
 }
 
-select {
-    padding: 5px;
-    margin-bottom: 10px;
-}
-
-/* Table styles */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #fff;
-}
+        width: 100%;
+        border-collapse: collapse;
+        text align: center;
+        margin: 30px;
+    }
 
-thead {
-    background-color: #3498db;
-    color: #fff;
-}
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border: 1px solid black;
+    }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-}
+    th {
+        background-color: lightseagreen;
+        color: white;
+    }
 
-tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-/* Hover effect on table rows */
-tbody tr:hover {
-    background-color: #dff9fb;
-    transition: background-color 0.3s;
+    tr:hover {
+        background-color: #ddd;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+    }
+    #filter-options label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+    font-size: 20px;
+    text-align: left; /* Align labels to the left */
 }
-
     </style>
 </head>
 <body>
-    <h1>Attendance Records</h1>
+    <div class="top-bar"></div>
 
-    <!-- Filter options -->
-    <label for="college">College:</label>
-    <select id="college" onchange="filterRecords()">
-        <option value="">All</option>
-        <option value="Trinity Academy of Engineering">Trinity Academy of Engineering</option>
-        <option value="Trinity College of Engineering and Research">Trinity College of Engineering and Research</option>
-        <option value="KJ College of Engineering and Research">KJ College of Engineering and Research</option>
-        <!-- Add other college options -->
-
-    </select>
-
-    <label for="department">Department:</label>
-    <select id="department" onchange="filterRecords()">
-        <option value="">All</option>
-        <option value="Mechanical">Mechanical</option>
-        <option value="Civil">Civil</option>
-        <option value="Computer">Computer</option>
-        <option value="Information Technology">Information Technology</option>
-        <option value="EnTC">EnTC</option>
-        <option value="MCA">MCA</option>
-        <!-- Add other department options -->
-    </select>
-
-    <!-- Table for attendance records -->
+    <div id="loader-overlay">
+      <div class="loader"></div>
+    </div>
+    <nav class="navbar navbar-expand-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="admin_dashboard.html">
+          <img
+            src="https://kjei.edu.in/admin_upload/27082022050243_889055_logo.png"
+            alt="Avatar Logo"
+            style="width: 80px"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarTogglerDemo02"
+          aria-controls="navbarTogglerDemo02"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item ">
+              <a class="nav-link active" aria-current="page" href="admin_dashboard.html">BACK</a>
+            </li>
+          </ul>
+          <form class="d-flex" action="/logout">
+            {% csrf_token %}
+            <button class="btn btn-outline-success btn-lg" type="submit">
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-4">
+      <h1>Attendance Records</h1>
+      <br>
+      <br>
+    </div>
+    <div id="filter-options" >
+        
+        <label for="college" >College: </label>
+        <select id="college" onchange="filterRecords()">
+            <option value="">All</option>
+            <option value="Trinity Academy of Engineering">Trinity Academy of Engineering</option>
+            <option value="Trinity College of Engineering and Research">Trinity College of Engineering and Research</option>
+            <option value="KJ College of Engineering and Research">KJ College of Engineering and Research</option>
+        </select>
+        
+        <label for="department">Department: </label>
+        <select id="department" onchange="filterRecords()">
+            <option value="">All</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Civil">Civil</option>
+            <option value="Computer">Computer</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="EnTC">EnTC</option>
+            <option value="MCA">MCA</option>
+        </select>
+    </div>
+    
     <table border="1">
         <thead>
             <tr>
                 <th>Student ID</th>
                 <th>Name</th>
-                <th>College</th>
+                <th>College Name</th>
                 <th>Department</th>
                 <th>Attendance Percentage</th>
             </tr>
@@ -106,18 +289,19 @@ tbody tr:hover {
                 <tr>
                     <td>{{ record.student_id }}</td>
                     <td>{{ record.name }}</td>
-                    <td>{{ record.college }}</td>
+                    <td>{{ record.college_name }}</td>
                     <td>{{ record.department }}</td>
                     <td>{{ record.attendance_percentage }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-
+    </div>
     <script>
         function filterRecords() {
             // Get selected filter values
             var collegeFilter = document.getElementById("college").value;
+            var genderFilter = document.getElementById("gender").value;
             var departmentFilter = document.getElementById("department").value;
 
             // Perform filtering and update the table
